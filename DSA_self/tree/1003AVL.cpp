@@ -1,4 +1,5 @@
 #include<iostream>
+#include<string>
 using namespace std;
 
 class TreeNode {
@@ -10,8 +11,9 @@ public:
     int bal = 0;
     int height = 0;
 
-    TreeNode(int val)
+    TreeNode(int val){
         this->val = val;
+    }
 };
 
 void updateBalanceAndHeight(TreeNode* node){ // O(1)
@@ -26,6 +28,7 @@ void updateBalanceAndHeight(TreeNode* node){ // O(1)
     node->bal = lh - rh;
     node->height = max(lh, rh) + 1;
 }
+
 
 TreeNode* rightRotation(TreeNode* A){   // O(1)
     TreeNode* B = A->right;
@@ -56,20 +59,22 @@ TreeNode* leftRotation(TreeNode* A){ // O(1)
 TreeNode* getRotation(TreeNode* node){
     updateBalanceAndHeight(node);
 
-    if(node->bal == 2){ // ll, lr
-        if(node->left->bal == 1){ //ll
+    if(node->bal >= 2){ // ll, lr
+        if(node->left->bal >= 1){ //ll
             return rightRotation(node);
         }
         else{ // lr
-
+            node->left = leftRotation(node->left);
+            return rightRotation(node);
         }
     }
-    else if(node->bal == -2){ // rr, rl
-        if(node->right->bal == -1){ //rr
+    else if(node->bal <= -2){ // rr, rl
+        if(node->right->bal <= -1){ //rr
             return leftRotation(node);
         }
         else{ // rl  
-
+            node->right = rightRotation(node->right);
+            return leftRotation(node);
         }
     }
 
@@ -141,3 +146,48 @@ TreeNode* deleteNode(TreeNode* root, int key) {
     return getRotation(root);
 }
 
+
+// for created BST
+TreeNode* postOrder(TreeNode* node){
+    if(node == nullptr) return nullptr;
+
+    node->left = postOrder(node->left);
+    node->right = postOrder(node->right);
+
+    return getRotation(node);
+}
+
+// display
+void display(TreeNode* node){
+    if(node == nullptr) return;
+
+    string s;
+    s += node->left == nullptr ? "." : to_string(node->left->val);
+    s += " -> " + to_string(node->val) + "(" + to_string(node->bal) + ")" " <- ";
+    s += node->right == nullptr ? "." : to_string(node->right->val);
+    cout << s << endl;
+
+    display(node->left);
+    display(node->right);
+}
+
+int main()
+{
+    TreeNode* root = nullptr;
+
+    for(int i = 1; i <= 15; i++){
+        root = insertIntoBST(root, i * 10);
+        display(root);
+
+        cout << "=========================";
+        cout << endl;
+    }
+    display(root);
+    cout << "=========================";
+    cout << endl;
+
+    root = postOrder(root);
+    display(root);
+
+    return 0;
+}

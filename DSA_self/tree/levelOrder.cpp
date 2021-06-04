@@ -336,9 +336,9 @@ vector<int> BottomView(TreeNode *root){
 vector<vector<int>> diagonalOrder(TreeNode *root){
     if(root == nullptr) return {};
     queue<TreeNode*> que;
-    que.push(root);
-
     vector<vector<int>> ans;
+    
+    que.push(root);
 
     while(que.size() != 0){     // diagonal no. 
         int size = que.size();
@@ -359,7 +359,7 @@ vector<vector<int>> diagonalOrder(TreeNode *root){
 }
 
 // Diagonal Order (anti-clock Wise) Of A Binarytree
-vector<vector<int>> diagonalOrder(TreeNode *root){
+vector<vect or<int>> diagonalOrder(TreeNode *root){
     if(root == nullptr) return {};
     queue<TreeNode*> que;
     que.push(root);

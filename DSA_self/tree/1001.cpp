@@ -190,7 +190,7 @@ int diameterOfBinaryTree_01(TreeNode* root){
 
 // method 2 i.e {dia,height}
 vector<int> diameterOfBinaryTree_02(TreeNode* root){
-    if(root == nullptr) return {-1, -1  };
+    if(root == nullptr) return {-1, -1};
 
     vector<int> leftAns = diameterOfBinaryTree_02(root->left);
 
