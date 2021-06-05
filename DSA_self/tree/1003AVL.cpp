@@ -135,7 +135,7 @@ TreeNode* deleteNode(TreeNode* root, int key) {
     else if(root->val < key)
         root->right = deleteNode(root->right, key);
     else{
-        if(root->left == nullptr || root->right == nullptr) // one child
+        if(root->left == nullptr || root->right == nullptr) // one child and 0 child
             return root->left != nullptr ? root->left : root->right;
 
         int maxValue = maximumEle(root->left);  
