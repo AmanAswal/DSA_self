@@ -553,6 +553,143 @@ TreeNode* bstFromPreorder(vector<int>& preorder) {
         
 }
 
+// 114. Flatten Binary Tree to Linked List
+// O(n^2)
+TreeNode* getTailNode(TreeNode* root){
+    if(root == nullptr) return nullptr;
+    TreeNode* curr = root;
+    while(curr->right != nullptr)
+        curr = curr->right;
+
+    return curr;
+}
+
+void flatten(TreeNode* root) {
+    if(root == nullptr) return;
+
+    flatten(root->left);
+    flatten(root->right);
+    TreeNode* tail = getTailNode(root->left);
+    if(tail != nullptr){
+        tail->right = root->right;
+        root->right = root->left;
+        root->left = nullptr;
+    }
+}
+
+// O(n)
+TreeNode* flatten_(TreeNode* node){
+    if(node == nullptr || node->left == nullptr && node->right == nullptr) 
+        return node;
+
+    TreeNode* leftTail = flatten_(node->left);
+    TreeNode* rightTail = flatten_(node->right);
+
+    if(leftTail != nullptr){
+        leftTail->right = node->right;
+        node->right = node->left;
+        node->left = nullptr;
+    }
+
+    return rightTail != nullptr ? rightTail : leftTail;
+}
+
+void flatten(TreeNode* root) {
+    if(root == nullptr) return;
+    flatten_(root);
+}
+
+
+// LeetCode 426. Convert Binary Search Tree to Sorted Doubly Linked List
+Node* dummy = new Node(-1);
+Node* prev = dummy;
+
+void treeToDoublyList_(Node* root){
+    if(root == nullptr) return;
+
+    treeToDoublyList_(root->left);
+
+    root->left = prev;
+    prev->right = root;
+
+    prev = root;
+
+    treeToDoublyList_(root->right);
+}
+
+Node* treeToDoublyList(Node* root){
+    if(root == nullptr) return nullptr;
+    treeToDoublyList_(root);
+    
+    Node* head = dummy->right;
+    head->left = nullptr;
+    dummy->right = nullptr;
+
+    prev->right = head;
+    head->left = prev;
+}
+
+// https://www.geeksforgeeks.org/convert-a-binary-tree-to-a-circular-doubly-link-list/
+    Node* dummy = new Node();
+    Node* prev = dummy;
+    
+    void treeToDoublyList_(Node* root){
+        if(root == nullptr) return;
+    
+        treeToDoublyList_(root->left);
+    
+        root->left = prev;
+        prev->right = root;
+    
+        prev = root;
+    
+        treeToDoublyList_(root->right);
+    }
+    
+    Node* bTreeToCList(Node* root){
+        if(root == nullptr) return nullptr;
+        treeToDoublyList_(root);
+        
+        Node* head = dummy->right;
+        head->left = nullptr;
+        dummy->right = nullptr;
+    
+        prev->right = head; // making circular
+        head->left = prev;
+
+        return head;
+    }
+
+// https://www.geeksforgeeks.org/in-place-convert-a-given-binary-tree-to-doubly-linked-list/
+    Node* dummy = new Node();
+    Node* prev = dummy;
+    
+    void treeToDoublyList_(Node* root){
+        if(root == nullptr) return;
+    
+        treeToDoublyList_(root->left);
+    
+        root->left = prev;
+        prev->right = root;
+    
+        prev = root;
+    
+        treeToDoublyList_(root->right);
+    }
+    
+    Node* bToDLL(Node* root){
+        if(root == nullptr) return nullptr;
+        treeToDoublyList_(root);
+        
+        Node* head = dummy->right;
+        head->left = nullptr;
+        dummy->right = nullptr;
+    
+        return head;
+    }
+
+
+
 int main()
 {
     return 0;
