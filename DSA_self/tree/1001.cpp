@@ -348,6 +348,211 @@ void recoverTree(TreeNode* root) {
     }
 }
 
+// predessor and successor
+// binary tree O(n)
+class allSolPair{
+    TreeNode* prev = nullptr;
+    TreeNode* pred = nullptr;
+    TreeNode* succ = nullptr;
+}
+
+void allSolution(TreeNode* node, int data, allSolPair pair){
+    if(node == nullptr) return;
+
+    allSolution(node->left, data, pair);
+
+    if(node->val == data && pair.pred == nullptr)
+        pair.pred = pair.prev;
+
+    if(pair.prev != nullptr && pair.prev->val == data && succ == nullptr)
+        pair.succ = node;
+
+    pair->prev = node;
+
+    allSolution(node->right, data, pair);
+}
+
+
+// predecesor and succesor in BST - O(logn)
+// ceil and floor
+void predSuccInBST(TreeNode* node, int data){
+    TreeNode* curr = node;
+    TreeNode* pred = nullptr;
+    TreeNode* succ = nullptr;
+    
+    bool isDataPresent = false;
+
+    while(curr != null){
+
+        if(curr->val == data){
+            isDataPresent = true;
+            if(curr->left != nullptr){
+                pred = curr->left;
+                while(pred->right != nullptr)
+                    pred = pred->right;
+            }
+
+            if(curr->right != nullptr){
+                succ = curr->right;
+                while(succ->left != nullptr)
+                    succ = succ->left;
+            }
+            break;
+        }
+        else if(curr->val < data){
+            pred = curr;
+            curr = curr->left;
+        }
+        else{
+            succ = curr;
+            curr = curr->right;
+        }
+    }
+    if(isDataPresent) // real pred & succ
+    if(!isDataPresent) // ceil and floor 
+}
+
+
+// 173. Binary Search Tree Iterator
+stack<TreeNode*> st;
+    BSTIterator(TreeNode* root) {
+        addAllLeft(root);
+    }
+        
+    void addAllLeft(TreeNode* node){
+        if(node == nullptr) return;
+        TreeNode* curr = node;
+        while(curr != nullptr){
+            st.push(curr);
+            curr = curr->left;
+        }
+    }
+    
+    int next() {
+        TreeNode* rn = st.top();
+        st.pop();
+        addAllLeft(rn->right);
+        return rn->val;
+    }
+    
+    bool hasNext() {
+        return st.size() != 0;
+    }
+};
+
+//  510. Inorder Successor in BST II #510
+
+/*
+class Node{
+public:
+    int val;
+    Node* left;
+    Node* right;
+    Node* parent;
+};
+*/
+
+Node* InorderSuccessor(Node* node){
+
+    if(node->right != nullptr){
+        node = node->right;
+        while(node->left != nullptr) node = node->left;
+
+        return node;
+    }
+    else{
+        while(node != null){
+            if(node->parent != nullptr && node->parent->left == node) 
+                return node->parent;
+            
+            node = node->parent;
+        }
+    }
+    return nullptr;
+}
+
+
+// construction
+
+// T => avg: O(nlogn), worst : O(n^2)
+
+// 105. Construct Binary Tree from Preorder and Inorder Traversal
+// psi = preorder starting index, isi = inorder starting index
+TreeNode* buildTree_(vector<int>& preorder, int psi, int pei, vector<int>& inorder, int isi, int iei) {
+    if(psi > pei) return nullptr;
+
+    TreeNode* node = new TreeNode(preorder[psi]);
+    int idx = isi;
+
+    while(inorder[idx] != preorder[psi])
+        idx++;
+
+    int tnel = idx - isi;   // total no of elements
+
+    node->left = buildTree_(preorder, psi + 1, psi + tnel, inorder, isi, idx - 1);
+
+    node->right = buildTree_(preorder, psi + tnel + 1 , pei, inorder, idx + 1, iei);
+
+    return node;
+}
+
+TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+    return buildTree_(preorder, 0, preorder.size() - 1, inorder, 0, inorder.size() - 1);
+}
+
+// 106. Construct Binary Tree from Inorder and Postorder Traversal
+TreeNode* buildTree_helper(vector<int>& inorder, int isi, int iei, vector<int>& postorder, int psi, int pei) {
+    if(psi > pei) return nullptr;
+
+    TreeNode* node = new TreeNode(postorder[pei]);
+    
+    int idx = isi;
+    while(inorder[idx] != postorder[pei]) idx++;
+
+    int tnel = idx - isi;
+
+    node->left = buildTree_helper(inorder, isi, idx - 1, postorder, psi, psi + tnel - 1);
+    node->right = buildTree_helper(inorder, idx + 1, iei, postorder, pei + tnel, pei - 1);
+
+    return node;
+}
+
+TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+    return buildTree_helper(inorder, 0, inorder.size() - 1, postorder, 0, postorder.size() - 1);
+}
+
+// 889. Construct Binary Tree from Preorder and Postorder Traversal
+TreeNode* prePostTree(vector<int>& pre, int psi, int pei, vector<int>& post, int ppsi, int ppei) {
+    if(psi > pei) return nullptr;
+
+    TreeNode* node = new TreeNode(pre[psi]);
+
+    if(psi == pei)
+        return node;
+    
+    int idx = ppsi;
+    while(post[idx] != pre[psi + 1])
+        idx++;
+
+    int tnel = idx - ppsi + 1;
+
+    node->left = prePostTree(pre, psi + 1, psi + tnel, post, ppsi, idx); 
+    node->right = prePostTree(pre, psi + tnel + 1, pei, post, idx + 1, ppei);
+
+    return node;
+}
+
+TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
+    int n = pre.size();
+
+    return prePostTree(pre, 0, n - 1, post, 0, n - 1);        
+}
+
+// 1008. Construct Binary Search Tree from Preorder Traversal
+TreeNode* bstFromPreorder(vector<int>& preorder) {
+        
+}
+
 int main()
 {
     return 0;

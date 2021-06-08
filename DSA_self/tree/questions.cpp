@@ -144,7 +144,7 @@ vector<vector<int>> verticalOrderTraversal(TreeNode* root){
     vector<vector<int>> ans;
 
     while(minHl <= maxHL){
-        ans.push_bacK(map[minHL++]);
+        ans.push_back(map[minHL++]);
     }
     return ans;
 }
@@ -366,6 +366,103 @@ int diameterOfBinaryTree(TreeNode* root){
     diameterOfBinaryTree_03(root);
     return maxDia;
 }
+
+// node to root path
+bool nodeToRootPath(TreeNode* root, TreeNode* data, vector<TreeNode*> &arr){
+    if(root == nullptr) return false;
+
+    if(root == data){
+        arr.push_back(root);
+        return true;
+    }
+    bool flag = false;
+    
+    flag = nodeToRootPath(root->left, data, arr) || nodeToRootPath(root->right, data, arr);
+
+    if(flag) 
+        arr.push_back(root);
+    
+    return flag;
+}
+
+// k down
+void kDown(TreeNode* root, TreeNode* block, int k, vector<TreeNode*> &arr){
+    if(root == nullptr || k < 0 || root == block) return;
+    
+    if(k == 0){
+        arr.push_back(root);
+        return;
+    }
+
+    kDown(root->left, block, k - 1, arr);
+    kDown(root->right, block, k - 1, arr);
+}
+
+// 863. All Nodes Distance K in Binary Tree
+vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+    if(root == nullptr) return {};
+    vector<TreeNode*> nodeToRoot;
+    nodeToRootPath(root, target, nodeToRoot);
+
+    vector<int> ans;
+    TreeNode* blockNode = nullptr;
+    for(int i = 0; i < nodeToRoot.size(); i++){
+        kDown(nodeToRoot[i], blockNode, k - i, ans);
+        blockNode = nodeToRoot[i];
+    }
+    return ans;
+}
+
+// method 2
+
+// w.r.t edge
+int nodeToRootDistance(TreeNode* root, TreeNode* data){
+    if(root == nullptr) return -1;
+
+    if(root == data) return 0;
+
+    int lans = nodeToRootDistance(root->left, data);
+    if(lans != -1)
+        return lans + 1;
+    
+
+    int rans = nodeToRootDistance(root->right, data);
+    if(rans != -1)
+        return rans + 1; 
+
+    return -1;
+}
+
+int distanceK2_(TreeNode* root, TreeNode* target, int k, vector<int> &ans) {
+    if(root == nullptr) return -1;
+
+    if(root == target){
+        kDown(root, nullptr, k, ans);
+        return 1;
+    }
+
+    int lans = distanceK2_(root->left, target, k, ans);
+    if(lans != -1){
+        kDown(root, root->left, k - lans, ans);
+        return lans + 1;
+    }
+
+    int rans = distanceK2_(root->right, target, k, ans);
+    if(rans != -1){
+        kDown(root, root->right, k - rans, ans);
+        return rans + 1;
+    }
+
+    return -1;
+}
+
+vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+    if(root == nullptr) return {};
+    vector<int> ans;
+    distanceK2_(root, target, k, ans);
+    return ans;
+}
+
 
 int main()
 {
