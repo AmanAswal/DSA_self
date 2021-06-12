@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<list>
 
 using namespace std;
 
@@ -548,11 +549,6 @@ TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
     return prePostTree(pre, 0, n - 1, post, 0, n - 1);        
 }
 
-// 1008. Construct Binary Search Tree from Preorder Traversal
-TreeNode* bstFromPreorder(vector<int>& preorder) {
-        
-}
-
 // 114. Flatten Binary Tree to Linked List
 // O(n^2)
 TreeNode* getTailNode(TreeNode* root){
@@ -627,6 +623,7 @@ Node* treeToDoublyList(Node* root){
 
     prev->right = head;
     head->left = prev;
+    return head;
 }
 
 // https://www.geeksforgeeks.org/convert-a-binary-tree-to-a-circular-doubly-link-list/
@@ -689,10 +686,172 @@ Node* treeToDoublyList(Node* root){
     }
 
 
+// serialize & deserialize
+int idx = 0;
+TreeNode* createTree(vector<int> &arr){
+    if(idx == arr.size() || arr[idx] == -1){
+        idx++;
+        return nullptr;
+    }
+
+    TreeNode* node = new TreeNode(arr[idx++]);
+    node->left = createTree(arr);
+    node->right = createTree(arr);
+    return node;
+}
+
+void serializeTree(TreeNode* node, vector<int> &arr){
+    if(node == nullptr) {
+        arr.push_back(-1);
+        return;
+    }
+    arr.push_back(node->val);
+    serializeTree(node->left, arr);
+    serializeTree(node->right, arr);
+}
+
+// MORRIS TRAVERSAL
+TreeNode* rightMost(TreeNode* next, TreeNode* curr){
+    while(next->right != nullptr && next->right != curr)
+        next = next->right;
+
+    return next;
+}
+
+// INORDER
+void morrisInorderTraversal(TreeNode* root){
+    TreeNode* curr = root;
+
+    while(curr != nullptr){
+        TreeNode* next = curr->left;
+        
+        if(next == null){
+            cout << curr->val << " ";
+            curr = curr->right;
+        }
+        else{
+            TreeNode* rightMost = rightMost(next, curr);
+            if(rightMost->right == nullptr){ // create thread 
+                rightMost->right = curr; 
+                curr = curr->left;
+            }
+            else{   // break thread
+                cout << curr->val << " ";
+                rightMost->right = nullptr;
+                curr = curr->right;
+            }
+        }
+    }
+}
+
+// PREORDER
+void morrisPreorderTraversal(TreeNode* root){
+    TreeNode* curr = root;
+
+    while(curr != nullptr){
+        TreeNode* next = curr->left;
+        
+        if(next == null){
+            cout << curr->val << " ";
+            curr = curr->right;
+        }
+        else{
+            TreeNode* rightMost = rightMost(next, curr);
+            if(rightMost->right == nullptr){ // create thread 
+                rightMost->right = curr; 
+                cout << curr->val << " ";
+                curr = curr->left;
+            }
+            else{   // break thread
+                rightMost->right = nullptr;
+                curr = curr->right;
+            }
+        }
+    }
+}
+
+// inorder, preorder, postorder traversal using stack (no recursion)
+
+class tPair{
+    TreeNode* node = nullptr;
+    bool selfDone = false;
+    bool leftDone = false;
+    bool rightDone = false;
+
+    tPair(TreeNode* node, bool selfDone, bool leftDone, bool rightDone){
+        this->node = node;
+        this->selfDone = selfDone;
+        this->leftDone = leftDone;
+        this->rightDone = rightDone;
+    }
+};
+
+void IterTraversal(TreeNod* root){
+    list<tPair> ll;
+    ll.push_front(tPair(root, false, false, false));
+
+    while(ll.size() != 0){
+        tPair rp = ll.front();
+
+        if(!rp.leftDone){
+            rp.leftDone = true;
+            if(rp.node->left != nullptr)
+                ll.push_front(tPair(rp.node->left, false, false, false));
+        }
+        else if(!rp.selfDone){
+            cout << rp.node->val << " ";
+            rp.selfDone = true;
+        }
+        else if(!rp.rightDone){
+            rp.rightDone = true;
+            if(rp.node->right != nullptr)
+                ll.push_front(tPair(rp.node->right, false, false, false));
+        }
+        else{
+            ll.pop_front();
+        }
+    }
+}
+
+// 1008. Construct Binary Search Tree from Preorder Traversal
+int bst_idx = 0;
+TreeNode* bstFromPreorder_(vector<int>& arr, int lr, int rr) {
+    if(bst_idx == arr.size() || arr[bst_idx] < lr || arr[bst_idx] > rr)
+        return nullptr;
+
+    TreeNode* node = new TreeNode(arr[bst_idx++]);
+
+    node->left = bstFromPreorder_(arr, lr, node->val);
+    node->right = bstFromPreorder_(arr, node->val, rr);
+    
+    return node;
+}
+
+TreeNode* bstFromPreorder(vector<int>& preorder) {
+    return bstFromPreorder_(preorder, -(int)1e8, (int)1e8);
+}
+
+// construct BST from postorder traversal
+int bst_idx = arr.size() - 1;
+TreeNode* bstFromPreorder_(vector<int>& arr, int lr, int rr) {
+    if(bst_idx == -1 || arr[bst_idx] < lr || arr[bst_idx] > rr)
+        return nullptr;
+
+    TreeNode* node = new TreeNode(arr[bst_idx--]);
+
+    node->right = bstFromPreorder_(arr, node->val, rr);
+    node->left = bstFromPreorder_(arr, lr, node->val);
+    
+    return node;
+}
+
+TreeNode* bstFromPreorder(vector<int>& preorder) {
+    return bstFromPreorder_(preorder, -(int)1e8, (int)1e8);
+}
+
 
 int main()
-{
+{   
     return 0;
 }
 
-// 5 
