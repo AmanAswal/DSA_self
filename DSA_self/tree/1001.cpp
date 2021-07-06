@@ -402,11 +402,11 @@ void predSuccInBST(TreeNode* node, int data){
         }
         else if(curr->val < data){
             pred = curr;
-            curr = curr->left;
+            curr = curr->right;
         }
         else{
             succ = curr;
-            curr = curr->right;
+            curr = curr->left;
         }
     }
     if(isDataPresent) // real pred & succ
